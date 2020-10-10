@@ -116,6 +116,7 @@
   margin-bottom: 30px;
   text-decoration: none;
   flex-basis: 31%;
+  text-decoration: none;
 }
 .card-image {
   width: 384px;
@@ -159,14 +160,21 @@
   display: flex;
   align-items: center;
   flex-wrap: wrap;
-  margin-bottom: 24px;
 }
 .card-buttons {
   display: flex;
   margin-top: 24px;
   flex-grow: 1;
   align-items: flex-end;
+  margin-top: 24px;
 }
+.card-price-bold {
+  font-weight: bold;
+  font-size: 20px;
+  line-height: 32px;
+  margin-left: 30px;
+}
+
 .rating {
   background-image: url("../img/icon/rating.svg");
   background-repeat: no-repeat;
@@ -293,7 +301,7 @@
   .card-info {
     flex-wrap: wrap;
   }
-  .rating {
+  .card  .rating {
     flex-basis: 100%;
   }
   .card .rating {
@@ -301,6 +309,9 @@
   }
   .card-title {
     font-size: 18px;
+  }
+  .card-image {
+    width: 100%;
   }
   .offer {
     background-size: 400px;
@@ -338,9 +349,6 @@
   }
   .card {
     flex-basis: 100%;
-  }
-  .card-image {
-    width: 100%;
   }
   .footer {
     padding: 30px 0;
