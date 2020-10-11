@@ -104,7 +104,7 @@ body {
 }
 .cards {
   display: flex;
-  align-items: flex-start;
+  align-items: stretch;
   justify-content: space-between;
   flex-wrap: wrap;
 }
