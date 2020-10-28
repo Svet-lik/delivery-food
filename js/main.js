@@ -1,3 +1,6 @@
+'use strict';
+consr RED_COLOR = "#ff0000";
+
 const cartButton = document.querySelector("#cart-button");
 const modal = document.querySelector(".modal");
 const close = document.querySelector(".close");
@@ -15,14 +18,13 @@ const menu = document.querySelector(".menu");
 const logo = document.querySelector(".logo");
 const cardsMenu = document.querySelector(".cards-menu");
 
-// открывает\закрывает окно корзины
-function toggleModal() {
-  modal.classList.toggle("is-open");
-}
-
 // забираем значение логина из браузера
 let login = localStorage.getItem("cloDelivery");
 
+// открывает/закрывает окно корзины
+function toggleModal() {
+  modal.classList.toggle("is-open");
+}
 // включает/выключает окно авторизации
 function toggleModalAuth() {
   modalAuth.classList.toggle("is-open");
@@ -33,7 +35,7 @@ function toggleModalAuth() {
   }
 }
 // очищаем форму
-clearForm = () => {
+function clearForm() {
   loginInput.style.borderColor = "";
   logInForm.reset();
 };
@@ -62,7 +64,7 @@ function notAutorized() {
     event.preventDefault();
 
     if (loginInput.value.trim()) {
-      //если логин сохранён (trim - удаляет пароли)
+      //если логин сохранён (trim - удаляет пробелы)
       login = loginInput.value;
       localStorage.setItem("gloDelivery", login); //сохраняем в браузере
 
@@ -73,11 +75,10 @@ function notAutorized() {
       logInForm.removeEventListener("submit", logIn);
       logInForm.reset(); //сбрасывает поля формы
     } else {
-      loginInput.style.borderColor = "#ff0000";
+      loginInput.style.borderColor = RED_COLOR;
       loginInput.value = "";
     }
   }
-
   buttonAuth.addEventListener("click", toggleModalAuth);
   closeAuth.addEventListener("click", toggleModalAuth);
   logInForm.addEventListener("submit", logIn);
@@ -100,84 +101,94 @@ function checkAuth() {
 // создаёт карточки
 function creatCardRestaurant() {
   const card = `
-  <a href="#" class="card card-restaurant">
-  <img src="img/pizza-plus/preview.jpg" alt="image" class="card-image"/>
-  <div class="card-text">
-    <div class="card-heading">
-      <h3 class="card-title">Пицца плюс</h3>
-      <span class="card-tag tag">50 мин</span>
-    </div>
-    <div class="card-info">
-      <div class="rating">
-        4.5
+    <a class="card card-restaurant">
+      <img src="img/pizza-plus/preview.jpg" alt="image" class="card-image"/>
+      <div class="card-text">
+        <div class="card-heading">
+          <h3 class="card-title">Пицца плюс</h3>
+          <span class="card-tag tag">50 мин</span>
+        </div>
+        <div class="card-info">
+          <div class="rating">
+            4.5
+          </div>
+          <div class="price">От 900 ₽</div>
+          <div class="category">Пицца</div>
+        </div>
       </div>
-      <div class="price">От 900 ₽</div>
-      <div class="category">Пицца</div>
-    </div>
-  </div>
-</a>
+    </a>
   `;
   cardsRestaurants.insertAdjacentHTML("beforeend", card);
 }
 
+// формирует карточку пиццы
 function createCardGoods() {
   const card = document.createElement("div");
   card.className = "card";
   card.insertAdjacentHTML(
     "beforeend",
     `
-              <img
-                src="img/pizza-plus/pizza-girls.jpg"
-                alt="image"
-                class="card-image"
-              />
-              <div class="card-text">
-                <div class="card-heading">
-                  <h3 class="card-title card-title-reg">Пицца Девичник</h3>
-                </div>
-                <div class="card-info">
-                  <div class="ingredients">
-                    Соус томатный, постное тесто, нежирный сыр, кукуруза, лук,
-                    маслины, грибы, помидоры, болгарский перец.
-                  </div>
-                </div>
-                <div class="card-buttons">
-                  <button class="button button-primary button-add-cart">
-                    <span class="button-card-text">В корзину</span>
-                    <span class="button-cart-svg"></span>
-                  </button>
-                  <strong class="card-price-bold">450 ₽</strong>
-                </div>
-              </div>                          
+        <img
+          src="img/pizza-plus/pizza-girls.jpg"
+          alt="image"
+          class="card-image"
+        />
+        <div class="card-text">
+          <div class="card-heading">
+            <h3 class="card-title card-title-reg">Пицца Девичник</h3>
+          </div>
+          <div class="card-info">
+            <div class="ingredients">
+              Соус томатный, постное тесто, нежирный сыр, кукуруза, лук,
+              маслины, грибы, помидоры, болгарский перец.
+            </div>
+          </div>
+          <div class="card-buttons">
+            <button class="button button-primary button-add-cart">
+              <span class="button-card-text">В корзину</span>
+              <span class="button-cart-svg"></span>
+            </button>
+            <strong class="card-price-bold">450 ₽</strong>
+          </div>
+        </div>                          
   `
   );
   cardsMenu.insertAdjacentElement("beforeend", card);
 }
 
+// отвечает за смену контента страницыЖ рестораны или карточки пиццы
 function openGoods(event) {
   const target = event.target;
-  const restaurant = target.closest(".cards-restaurant");
-  if (restaurant) {
-    containerPromo.classList.add("hide");
-    restaurants.classList.add("hide");
-    menu.classList.remove("hide");
+  if (login) {
+    const restaurant = target.closest(".card-restaurant");
+    if (restaurant) {
+      containerPromo.classList.add("hide");
+      restaurants.classList.add("hide");
+      menu.classList.remove("hide");
+  
+      cardsMenu.textContent = '';
+  
+      createCardGoods();
+      createCardGoods();
+      createCardGoods();
+  }
+  } else {
+    toggleModalAuth();
   }
 }
-
-console.log(logo);
 
 cartButton.addEventListener("click", toggleModal);
 close.addEventListener("click", toggleModal);
 buttonAuth.addEventListener("click", clearForm);
 cardsRestaurants.addEventListener("click", openGoods);
-logo.addEventListener("click", () => {
+logo.addEventListener("click", function () {
   containerPromo.classList.remove("hide");
   restaurants.classList.remove("hide");
   menu.classList.add("hide");
 });
 
-checkAuth();
+// временные 
 creatCardRestaurant();
-createCardGoods();
-createCardGoods();
-createCardGoods();
+creatCardRestaurant();
+creatCardRestaurant();
+checkAuth();

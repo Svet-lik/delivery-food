@@ -15,5 +15,5 @@ window.disableScroll = function () {
 }
 window.enableScroll = function () {
   document.body.style.cssText = '';
-  window.scroll({top: document.body.dataset.scrollY;})
+  window.scroll({top: document.body.dataset.scrollY})
 }
