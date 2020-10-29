@@ -9,8 +9,12 @@
       rel="stylesheet"
     />
     <link rel="stylesheet" href="css/normalize.css" />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/swiper/swiper-bundle.min.css"
+    />
+    //слайдер: стили
     <link rel="stylesheet" href="css/style.css" />
-    <!-- <link rel="stylesheet" href="css/swiper.min.css">-->
   </head>
 
   <body>
@@ -47,33 +51,50 @@
 
     <main class="main">
       <div class="container">
-        <section class="container-promo">
-          <section class="promo pizza">
-            <h1 class="promo-title">Онлайн-сервис <br />доставки еды на дом</h1>
-            <p class="promo-text">
-              Блюда из любимого ресторана привезет курьер в перчатках, маске и с
-              антисептиком
-            </p>
-          </section>
-          <!-- <section class="promo kebab">
-					<h1 class="promo-title">Шашлыки на майские <br> со скидкой 35%</h1>
-					<p class="promo-text">
-						Закажите шашлыки в любом ресторане до 10 мая и получите скидку по промокоду OMAGAD
-					</p>
-				</section>
-				<section class="promo vegetables">
-					<h1 class="promo-title">Скидка 20% на всю еду <br> по промокоду LOVE.JS</h1>
-					<p class="promo-text">
-						Блюдо из ресторана привезут вместе с двумя подарочными книгами по фронтенду
-					</p>
-				</section>
-				<section class="promo sushi">
-					<h1 class="promo-title">Сеты со скидкой до 30% <br> в ресторанах</h1>
-					<p class="promo-text">
-						Скидки на сеты до 30 мая по промокоду DADADA
-					</p>
-				</section> -->
-        </section>
+        <div class="swiper-container">
+          <div class="container-promo swiper-wrapper">
+            <section class="promo pizza swiper-slide">
+              <h2 class="promo-title">
+                Онлайн-сервис <br />доставки еды на дом
+              </h2>
+              <p class="promo-text">
+                Блюда из любимого ресторана привезет курьер в перчатках, маске и
+                с антисептиком
+              </p>
+            </section>
+            <section class="promo kebab swiper-slide">
+              <h2 class="promo-title">
+                Шашлыки на майские <br />
+                со скидкой 35%
+              </h2>
+              <p class="promo-text">
+                Закажите шашлыки в любом ресторане до 10 мая и получите скидку
+                по промокоду OMAGAD
+              </p>
+            </section>
+            <section class="promo vegetables swiper-slide">
+              <h2 class="promo-title">
+                Скидка 20% на всю еду <br />
+                по промокоду LOVE.JS
+              </h2>
+              <p class="promo-text">
+                Блюдо из ресторана привезут вместе с двумя подарочными книгами
+                по фронтенду
+              </p>
+            </section>
+            <section class="promo sushi swiper-slide">
+              <h2 class="promo-title">
+                Сеты со скидкой до 30% <br />
+                в ресторанах
+              </h2>
+              <p class="promo-text">
+                Скидки на сеты до 30 мая по промокоду DADADA
+              </p>
+            </section>
+          </div>
+          <div class="swiper-pagination"></div>
+        </div>
+        
         <section class="restaurants">
           <div class="section-heading">
             <h2 class="section-title">Рестораны</h2>
@@ -92,9 +113,7 @@
           <div class="section-heading">
             <h2 class="section-title restaurant-title">Пицца Плюс</h2>
             <div class="card-info">
-              <div class="rating">
-                4.5
-              </div>
+              <div class="rating">4.5</div>
               <div class="price">От 900 ₽</div>
               <div class="category">Пицца</div>
             </div>
@@ -224,8 +243,9 @@
       </div>
       <!-- /.modal-dialog -->
     </div>
-    <!--<script src="js/wow.min.js"></script>-->
+
+    <!-- <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script> -->
     <script src="js/disabledScroll.js"></script>
-    <script src="js/main.js"></script>
+    <script src="js/main.js" type="module"></script>
   </body>
 </html>

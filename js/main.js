@@ -1,5 +1,8 @@
 'use strict';
-consr RED_COLOR = "#ff0000";
+// подключаем слайдер
+import Swiper from 'https://unpkg.com/swiper/swiper-bundle.esm.browser.min.js';
+
+const RED_COLOR = "#ff0000";
 
 const cartButton = document.querySelector("#cart-button");
 const modal = document.querySelector(".modal");
@@ -20,6 +23,12 @@ const cardsMenu = document.querySelector(".cards-menu");
 
 // забираем значение логина из браузера
 let login = localStorage.getItem("cloDelivery");
+
+// валидация
+function validName (str) {
+  const regName = /^[a-zA-Z0-9-_\.]{3,20}$/;
+  return regName.test(str);
+}
 
 // открывает/закрывает окно корзины
 function toggleModal() {
@@ -63,7 +72,7 @@ function notAutorized() {
   function logIn(event) {
     event.preventDefault();
 
-    if (loginInput.value.trim()) {
+    if (validName(loginInput.value)) {
       //если логин сохранён (trim - удаляет пробелы)
       login = loginInput.value;
       localStorage.setItem("gloDelivery", login); //сохраняем в браузере
@@ -192,3 +201,24 @@ creatCardRestaurant();
 creatCardRestaurant();
 creatCardRestaurant();
 checkAuth();
+
+new Swiper('.swiper-container', { //настройка слайдера
+  sliderPerView: 1,
+  loop: true,
+  autoplay: true,
+  effect: 'cube',
+  // effect: 'coverflow', остальное в этом блоке убираем
+  grabCursor: true,
+  cubeEffect:{      //убираем тень слайдера
+    shadow: false,
+  },
+  pagination: {
+    el: '.swiper-pagination',
+    clickable: true,
+  },
+  //пагинацию урать и добавить:
+  // scrollbar: {
+  //   el: '.swiper-scrollbar',
+  //   draggable: true,
+  // },
+});
