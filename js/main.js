@@ -25,6 +25,11 @@ const restaurantRating = document.querySelector('.rating');
 const restaurantPrice = document.querySelector('.price');
 const restaurantCategory = document.querySelector('.category');
 const inputSearch = document.querySelector('.input-search');
+const modalBody = document.querySelector('.modal-body');
+const modalPrice = document.querySelector('.modal-pricetag');
+const buttonClearCart = document.querySelector('.clear-cart');
+
+const cart = [];
 
 // добавление тегов перехода (быстрые ссылки)
 const str = 'сыр \n соус \n кофе';
@@ -43,8 +48,10 @@ const getData = async function (url) {
   return await response.json();
 };
 
-// забираем значение логина из браузера
-let login = localStorage.getItem('cloDelivery');
+// забираем значение логина и корзины из браузера
+let login = localStorage.getItem('gloDelivery');
+let userCart = (JSON.parse(localStorage.getItem('gloUserCart')));
+if (userCart) cart.push(...userCart);
 
 // валидация
 const validName = function (str) {
@@ -76,16 +83,19 @@ function autorized() {
   function logOut() {
     login = null;
     localStorage.removeItem('gloDelivery'); //очищаем localstorage
+    localStorage.removeItem('gloUserCart');
     buttonAuth.style.display = '';
     userName.style.display = '';
     buttonOut.style.display = '';
+    cartButton.style.display = '';
     checkAuth();
     buttonOut.removeEventListener('click', logOut);
   }
   userName.textContent = login;
   buttonAuth.style.display = 'none';
   userName.style.display = 'inline';
-  buttonOut.style.display = 'block';
+  buttonOut.style.display = 'flex';
+  cartButton.style.display = 'flex';
   buttonOut.addEventListener('click', logOut);
 }
 
@@ -179,7 +189,7 @@ function createCardGoods({
 }) {
   const card = document.createElement('div');
   card.className = 'card';
-  card.dataset.id = id;
+  card.id = id;
 
   card.insertAdjacentHTML(
     'beforeend',
@@ -203,7 +213,7 @@ function createCardGoods({
               <span class='button-card-text'>В корзину</span>
               <span class='button-cart-svg'></span>
             </button>
-            <strong class='card-price-bold'>${price} ₽</strong>
+            <strong class='card-price card-price-bold'>${price} ₽</strong>
           </div>
         </div>                          
   `
@@ -211,7 +221,7 @@ function createCardGoods({
   cardsMenu.insertAdjacentElement('beforeend', card);
 }
 
-// отвечает за смену контента страницыЖ рестораны или карточки пиццы
+// отвечает за смену контента страницы: рестораны или карточки пиццы
 function openGoods(event) {
   const target = event.target;
   if (login) {
@@ -238,12 +248,92 @@ function openGoods(event) {
   }
 }
 
+function renderCart() {
+  modalBody.textContent='';
+  localStorage.setItem('gloUserCart', JSON.stringify((cart)));
+  cart.forEach(function({ id, title, cost, count }) {
+    const itemCart = document.createElement('div');
+    itemCart.className = "food-row";
+        
+    itemCart.insertAdjacentHTML('beforeend', `
+    <span class="food-name">${title}</span>
+    <strong class="food-price">${cost}</strong>
+    <div class="food-counter">
+    <button class="counter-button counter-minus" data-id="${id}">-</button>
+    <span class="counter">${count}</span>
+    <button class="counter-button counter-plus" data-id="${id}">+</button>
+    </div>
+    `);
+    modalBody.insertAdjacentElement('afterbegin', itemCart);
+  });
+  const totalPrice = cart.reduce(function(result, item) {
+    return result + (parseFloat(item.cost) * item.count);
+  }, 0);
+  modalPrice.textContent = totalPrice +'  ₽';
+};
+
+function addToCart(event) {
+  const target = event.target;
+  const buttonAddToCart = target.closest('.button-add-cart');
+
+  if (buttonAddToCart) {
+    const card = target.closest('.card');
+    const title = card.querySelector('.card-title-reg').textContent;
+    const cost = card.querySelector('.card-price').textContent;
+    const id = card.id;
+    const food = cart.find(function(item) {
+      return item.id === id;
+    });
+    if (food) {
+      food.count ++;
+    } else {
+      cart.push({
+        title,
+        cost,
+        id,
+        count: 1
+      });
+    }
+    localStorage.setItem('gloUserCart', JSON.stringify((cart)));
+  }
+}
+
+function changeCount(event) {
+  const target = event.target;
+  if (target.classList.contains('counter-button')) {
+    const food = cart.find(function(item){
+      return item.id === target.dataset.id;
+    });
+    if (target.classList.contains('counter-minus')) {
+      food.count--; 
+      if (food.count === 0) cart.splice(cart.indexOf(food), 1);
+    };
+    if (target.classList.contains('counter-plus')) food.count++;
+    renderCart();
+  };
+}
+function clearCart() {
+  cart.length = 0;
+  userCart = null;
+  localStorage.removeItem('gloUserCart');
+  renderCart();
+  setTimeout(function() {
+    toggleModal();
+  }, 1000);
+}
+
 function init() {
   getData('./db/partners.json').then(function (data) {
     data.forEach(creatCardRestaurant);
   });
 
-  cartButton.addEventListener('click', toggleModal);
+  cartButton.addEventListener('click', function() {
+    renderCart();
+    toggleModal();
+  });
+  buttonClearCart.addEventListener('click', clearCart);
+  modalBody.addEventListener('click', changeCount);
+  cardsMenu.addEventListener('click', addToCart);
   close.addEventListener('click', toggleModal);
   buttonAuth.addEventListener('click', clearForm);
   cardsRestaurants.addEventListener('click', openGoods);
