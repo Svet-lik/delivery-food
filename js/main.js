@@ -2,42 +2,64 @@
 // подключаем слайдер
 import Swiper from 'https://unpkg.com/swiper/swiper-bundle.esm.browser.min.js';
 
-const RED_COLOR = "#ff0000";
+const RED_COLOR = '#ff0000';
 
-const cartButton = document.querySelector("#cart-button");
-const modal = document.querySelector(".modal");
-const close = document.querySelector(".close");
-const userName = document.querySelector(".user-name");
-const buttonOut = document.querySelector(".button-out");
-const buttonAuth = document.querySelector(".button-auth");
-const modalAuth = document.querySelector(".modal-auth");
-const closeAuth = document.querySelector(".close-auth");
-const logInForm = document.querySelector("#logInForm");
-const loginInput = document.querySelector("#login");
-const cardsRestaurants = document.querySelector(".cards-restaurants");
-const containerPromo = document.querySelector(".container-promo");
-const restaurants = document.querySelector(".restaurants");
-const menu = document.querySelector(".menu");
-const logo = document.querySelector(".logo");
-const cardsMenu = document.querySelector(".cards-menu");
+const cartButton = document.querySelector('#cart-button');
+const modal = document.querySelector('.modal');
+const close = document.querySelector('.close');
+const userName = document.querySelector('.user-name');
+const buttonOut = document.querySelector('.button-out');
+const buttonAuth = document.querySelector('.button-auth');
+const modalAuth = document.querySelector('.modal-auth');
+const closeAuth = document.querySelector('.close-auth');
+const logInForm = document.querySelector('#logInForm');
+const loginInput = document.querySelector('#login');
+const cardsRestaurants = document.querySelector('.cards-restaurants');
+const containerPromo = document.querySelector('.container-promo');
+const restaurants = document.querySelector('.restaurants');
+const menu = document.querySelector('.menu');
+const logo = document.querySelector('.logo');
+const cardsMenu = document.querySelector('.cards-menu');
+const restaurantTitle = document.querySelector('.restaurant-title');
+const restaurantRating = document.querySelector('.rating');
+const restaurantPrice = document.querySelector('.price');
+const restaurantCategory = document.querySelector('.category');
+const inputSearch = document.querySelector('.input-search');
+
+// добавление тегов перехода (быстрые ссылки)
+const str = 'сыр \n соус \n кофе';
+str.split('\n').map(string => string.trim()).forEach(item => {
+  document.body.insertAdjacentHTML('beforeend', `
+    <a href='?search${item}'>${item}</a>
+  `)});
+
+// получаем данные из БД
+const getData = async function (url) {
+
+  const response = await fetch(url);
+  if (!response.ok) {
+    throw new Error(`Ошибка по адресу ${url}, статус ошибки ${response.status}!`);
+  };
+  return await response.json();
+};
 
 // забираем значение логина из браузера
-let login = localStorage.getItem("cloDelivery");
+let login = localStorage.getItem('cloDelivery');
 
 // валидация
-function validName (str) {
+const validName = function (str) {
   const regName = /^[a-zA-Z0-9-_\.]{3,20}$/;
   return regName.test(str);
 }
 
 // открывает/закрывает окно корзины
-function toggleModal() {
-  modal.classList.toggle("is-open");
+const toggleModal = function () {
+  modal.classList.toggle('is-open');
 }
 // включает/выключает окно авторизации
-function toggleModalAuth() {
-  modalAuth.classList.toggle("is-open");
-  if (modalAuth.classList.contains("is-open")) {
+const toggleModalAuth = function () {
+  modalAuth.classList.toggle('is-open');
+  if (modalAuth.classList.contains('is-open')) {
     disableScroll();
   } else {
     enableScroll();
@@ -45,7 +67,7 @@ function toggleModalAuth() {
 }
 // очищаем форму
 function clearForm() {
-  loginInput.style.borderColor = "";
+  loginInput.style.borderColor = '';
   logInForm.reset();
 };
 
@@ -53,18 +75,18 @@ function clearForm() {
 function autorized() {
   function logOut() {
     login = null;
-    localStorage.removeItem("gloDelivery"); //очищаем localstorage
-    buttonAuth.style.display = "";
-    userName.style.display = "";
-    buttonOut.style.display = "";
+    localStorage.removeItem('gloDelivery'); //очищаем localstorage
+    buttonAuth.style.display = '';
+    userName.style.display = '';
+    buttonOut.style.display = '';
     checkAuth();
-    buttonOut.removeEventListener("click", logOut);
+    buttonOut.removeEventListener('click', logOut);
   }
   userName.textContent = login;
-  buttonAuth.style.display = "none";
-  userName.style.display = "inline";
-  buttonOut.style.display = "block";
-  buttonOut.addEventListener("click", logOut);
+  buttonAuth.style.display = 'none';
+  userName.style.display = 'inline';
+  buttonOut.style.display = 'block';
+  buttonOut.addEventListener('click', logOut);
 }
 
 // для неавторизованных пользователей
@@ -75,24 +97,24 @@ function notAutorized() {
     if (validName(loginInput.value)) {
       //если логин сохранён (trim - удаляет пробелы)
       login = loginInput.value;
-      localStorage.setItem("gloDelivery", login); //сохраняем в браузере
+      localStorage.setItem('gloDelivery', login); //сохраняем в браузере
 
       toggleModalAuth();
       checkAuth();
-      buttonAuth.removeEventListener("click", toggleModalAuth);
-      closeAuth.removeEventListener("click", toggleModalAuth);
-      logInForm.removeEventListener("submit", logIn);
+      buttonAuth.removeEventListener('click', toggleModalAuth);
+      closeAuth.removeEventListener('click', toggleModalAuth);
+      logInForm.removeEventListener('submit', logIn);
       logInForm.reset(); //сбрасывает поля формы
     } else {
       loginInput.style.borderColor = RED_COLOR;
-      loginInput.value = "";
+      loginInput.value = '';
     }
   }
-  buttonAuth.addEventListener("click", toggleModalAuth);
-  closeAuth.addEventListener("click", toggleModalAuth);
-  logInForm.addEventListener("submit", logIn);
-  modalAuth.addEventListener("click", (event) => {
-    if (event.target.classList.contains("is-open")) {
+  buttonAuth.addEventListener('click', toggleModalAuth);
+  closeAuth.addEventListener('click', toggleModalAuth);
+  logInForm.addEventListener('submit', logIn);
+  modalAuth.addEventListener('click', (event) => {
+    if (event.target.classList.contains('is-open')) {
       toggleModalAuth();
     }
   });
@@ -108,117 +130,194 @@ function checkAuth() {
 }
 
 // создаёт карточки
-function creatCardRestaurant() {
-  const card = `
-    <a class="card card-restaurant">
-      <img src="img/pizza-plus/preview.jpg" alt="image" class="card-image"/>
-      <div class="card-text">
-        <div class="card-heading">
-          <h3 class="card-title">Пицца плюс</h3>
-          <span class="card-tag tag">50 мин</span>
-        </div>
-        <div class="card-info">
-          <div class="rating">
-            4.5
-          </div>
-          <div class="price">От 900 ₽</div>
-          <div class="category">Пицца</div>
-        </div>
+function creatCardRestaurant({
+  name,
+  image,
+  kitchen,
+  price,
+  stars,
+  products,
+  time_of_delivery: timeOfDelivery
+}) {
+
+  const cardRestaurant = document.createElement('a');
+  cardRestaurant.className = 'card card-restaurant';
+  cardRestaurant.products = products;
+  // создаем свойство для пердачи параметров ресторана
+  cardRestaurant.info = {
+    name,    
+    kitchen,
+    price,
+    stars
+  }
+
+  const card = `    
+    <img src='${image}' alt='image' class='card-image'/>
+    <div class='card-text'>
+      <div class='card-heading'>
+        <h3 class='card-title'>${name}</h3>
+        <span class='card-tag tag'>${timeOfDelivery} мин</span>
       </div>
-    </a>
+      <div class='card-info'>
+        <div class='rating'>${stars}</div>
+        <div class='price'>От ${price} ₽</div>
+        <div class='category'>${kitchen}</div>
+      </div>
+    </div>
   `;
-  cardsRestaurants.insertAdjacentHTML("beforeend", card);
+  cardRestaurant.insertAdjacentHTML('beforeend', card)
+  cardsRestaurants.insertAdjacentElement('beforeend', cardRestaurant);
 }
 
 // формирует карточку пиццы
-function createCardGoods() {
-  const card = document.createElement("div");
-  card.className = "card";
+function createCardGoods({
+  id,
+  name,
+  description,
+  price,
+  image
+}) {
+  const card = document.createElement('div');
+  card.className = 'card';
+  card.dataset.id = id;
+
   card.insertAdjacentHTML(
-    "beforeend",
+    'beforeend',
     `
         <img
-          src="img/pizza-plus/pizza-girls.jpg"
-          alt="image"
-          class="card-image"
+          src='${image}'
+          alt='image'
+          class='card-image'
         />
-        <div class="card-text">
-          <div class="card-heading">
-            <h3 class="card-title card-title-reg">Пицца Девичник</h3>
+        <div class='card-text'>
+          <div class='card-heading'>
+            <h3 class='card-title card-title-reg'>${name}</h3>
           </div>
-          <div class="card-info">
-            <div class="ingredients">
-              Соус томатный, постное тесто, нежирный сыр, кукуруза, лук,
-              маслины, грибы, помидоры, болгарский перец.
+          <div class='card-info'>
+            <div class='ingredients'>
+              ${description}
             </div>
           </div>
-          <div class="card-buttons">
-            <button class="button button-primary button-add-cart">
-              <span class="button-card-text">В корзину</span>
-              <span class="button-cart-svg"></span>
+          <div class='card-buttons'>
+            <button class='button button-primary button-add-cart'>
+              <span class='button-card-text'>В корзину</span>
+              <span class='button-cart-svg'></span>
             </button>
-            <strong class="card-price-bold">450 ₽</strong>
+            <strong class='card-price-bold'>${price} ₽</strong>
           </div>
         </div>                          
   `
   );
-  cardsMenu.insertAdjacentElement("beforeend", card);
+  cardsMenu.insertAdjacentElement('beforeend', card);
 }
 
 // отвечает за смену контента страницыЖ рестораны или карточки пиццы
 function openGoods(event) {
   const target = event.target;
   if (login) {
-    const restaurant = target.closest(".card-restaurant");
+    const restaurant = target.closest('.card-restaurant');
     if (restaurant) {
-      containerPromo.classList.add("hide");
-      restaurants.classList.add("hide");
-      menu.classList.remove("hide");
-  
+      const { name, kitchen, price, stars } = restaurant.info;
+
       cardsMenu.textContent = '';
-  
-      createCardGoods();
-      createCardGoods();
-      createCardGoods();
-  }
+      containerPromo.classList.add('hide');
+      restaurants.classList.add('hide');
+      menu.classList.remove('hide');
+
+      restaurantTitle.textContent = name;
+      restaurantRating.textContent = stars;
+      restaurantPrice.textContent = `От ${price} ₽`;
+      restaurantCategory.textContent = kitchen;
+
+      getData(`./db/${restaurant.products}`).then(function (data) {
+        data.forEach(createCardGoods)
+      })
+    }
   } else {
     toggleModalAuth();
   }
 }
 
-cartButton.addEventListener("click", toggleModal);
-close.addEventListener("click", toggleModal);
-buttonAuth.addEventListener("click", clearForm);
-cardsRestaurants.addEventListener("click", openGoods);
-logo.addEventListener("click", function () {
-  containerPromo.classList.remove("hide");
-  restaurants.classList.remove("hide");
-  menu.classList.add("hide");
-});
+function init() {
+  getData('./db/partners.json').then(function (data) {
+    data.forEach(creatCardRestaurant);
+  });
 
-// временные 
-creatCardRestaurant();
-creatCardRestaurant();
-creatCardRestaurant();
-checkAuth();
+  cartButton.addEventListener('click', toggleModal);
+  close.addEventListener('click', toggleModal);
+  buttonAuth.addEventListener('click', clearForm);
+  cardsRestaurants.addEventListener('click', openGoods);
+  logo.addEventListener('click', function () {
+    containerPromo.classList.remove('hide');
+    restaurants.classList.remove('hide');
+    menu.classList.add('hide');
+  });
+  inputSearch.addEventListener('keypress', function (event) {
+    if (event.charCode === 13) {
+      const value = event.target.value.trim();
 
-new Swiper('.swiper-container', { //настройка слайдера
-  sliderPerView: 1,
-  loop: true,
-  autoplay: true,
-  effect: 'cube',
-  // effect: 'coverflow', остальное в этом блоке убираем
-  grabCursor: true,
-  cubeEffect:{      //убираем тень слайдера
-    shadow: false,
-  },
-  pagination: {
-    el: '.swiper-pagination',
-    clickable: true,
-  },
-  //пагинацию урать и добавить:
-  // scrollbar: {
-  //   el: '.swiper-scrollbar',
-  //   draggable: true,
-  // },
-});
+      if (!value) {
+        event.target.style.backgroundColor = RED_COLOR;
+        event.target.value = '';
+        setTimeout(function() {
+          event.target.style.backgroundColor = '';
+        }, 1500);
+        return;
+      }
+
+      getData('./db/partners.json')
+      .then(function(data) {
+        return data.map(function(partner) {
+          return partner.products;
+        });
+      })
+      .then(function(linkProducts) {
+        cardsMenu.textContent = '';
+        containerPromo.classList.add('hide');
+        restaurants.classList.add('hide');
+        menu.classList.remove('hide');
+        restaurantTitle.textContent = 'Результат поиска';
+        restaurantRating.textContent = '';
+        restaurantPrice.textContent = '';
+        restaurantCategory.textContent = 'по всем кухням';
+        linkProducts.forEach(function (link) {
+          getData(`./db/${link}`)
+          .then(function (data) {  
+            const resultSearch = data.filter(function (item) {
+              const itemName = item.name.toLowerCase();
+              return itemName.includes(value.toLowerCase());
+            })
+            resultSearch.forEach(createCardGoods);
+          }
+          );
+        })
+      })
+    }
+  })
+
+  // временные 
+  checkAuth();
+
+  new Swiper('.swiper-container', { //настройка слайдера
+    slidesPerView: 1,
+    loop: true,
+    autoplay: true,
+    effect: 'cube',
+    // effect: 'coverflow', остальное в этом блоке убираем
+    grabCursor: true,
+    cubeEffect: { //убираем тень слайдера
+      shadow: false,
+    },
+    pagination: {
+      el: '.swiper-pagination',
+      clickable: true,
+    },
+    //пагинацию урать и добавить:
+    // scrollbar: {
+    //   el: '.swiper-scrollbar',
+    //   draggable: true,
+    // },
+  });
+}
+
+init();
